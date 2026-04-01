@@ -32,6 +32,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Product> getProductsByClient(Long clientId) {
+        return productRepository.findByClientId(clientId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
     }

@@ -7,9 +7,18 @@
     <div class="main-content">
         <h2 class="mb-4">Add New Product</h2>
         <div class="card p-4 mx-auto" style="max-width: 500px;">
-            <form th:action="@{/gm/products/save}" th:object="${product}" method="post">
+            <form th:action="@{/gm/products/save(source=${source})}" th:object="${product}" method="post">
                 <div class="mb-3">
-                    <label>Name</label><input type="text" class="form-control" th:field="*{name}" required>
+                    <label class="form-label">Client</label>
+                    <select class="form-select" th:field="*{client.id}" required>
+                        <option value="" disabled selected>Select Client...</option>
+                        <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.name}"></option>
+                    </select>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('client.id')}" th:errors="*{client.id}"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" class="form-control" th:field="*{name}" required>
                     <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                 </div>
                 <div class="mb-3 row">

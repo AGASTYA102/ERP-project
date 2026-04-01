@@ -21,6 +21,11 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @jakarta.validation.constraints.NotNull(message = "Client is required")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+
     private Double ratePerUnit;
 
     private String dimensions;
