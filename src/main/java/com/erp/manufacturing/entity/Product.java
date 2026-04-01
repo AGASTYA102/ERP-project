@@ -38,6 +38,13 @@ public class Product {
 
     private String plateId;
 
+    private String designApprovedFileUrl;
+
+    private String topPlyMaterial;
+
+    @Column(columnDefinition = "TEXT")
+    private String restPlySpecs;
+
     @Column(columnDefinition = "TEXT")
     private String materialSpecs;
 }

@@ -13,4 +13,5 @@ public interface OrderService {
     Optional<OrderEntity> getOrderById(Long id);
     List<OrderEntity> getOrdersByStatus(OrderStatus status);
     void updateOrderStatus(Long orderId, OrderStatus newStatus, String action, String username);
+    void saveOrderManually(OrderEntity order);
 }

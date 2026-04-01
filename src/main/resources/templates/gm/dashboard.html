@@ -8,42 +8,54 @@
         <h2 class="mb-4">GM Dashboard: All Orders</h2>
         
         <div class="card p-4">
-            <div class="d-flex justify-content-between mb-3">
-                <h5 class="mb-0">Pipeline Overview</h5>
-                <a href="/gm/orders/new" class="btn btn-primary">+ Punch New Order</a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <h5 class="mb-0 me-4">Pipeline Overview</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="pendingFilter">
+                        <label class="form-check-label" for="pendingFilter">Show Pending Only</label>
+                    </div>
+                </div>
+                <a href="/gm/orders/new" class="btn btn-primary shadow-sm">+ Punch New Order</a>
             </div>
+            
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle" id="ordersTable">
                     <thead>
-                        <tr>
-                            <th>Order ID</th>
+                        <tr class="bg-light">
+                            <th>S.No</th>
                             <th>Client</th>
                             <th>Product</th>
+                            <th>Print Status</th>
+                            <th>Corru Status</th>
+                            <th>Quantity</th>
+                            <th>Delivery Date</th>
+                            <th>Order Date</th>
                             <th>Status</th>
-                            <th>Delivery</th>
-                            <th>PO Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="order : ${orders}">
-                            <td><a th:href="@{/gm/orders/{id}(id=${order.id})}" th:text="${order.id}"></a></td>
-                            <td th:text="${order.client.name}"></td>
+                        <tr th:each="order, stat : ${orders}" th:data-status="${order.status}">
+                            <td th:text="${stat.count}"></td>
+                            <td><strong th:text="${order.client.name}"></strong></td>
                             <td th:text="${order.product.name}"></td>
                             <td>
-                                <span class="badge" th:classappend="${
-                                    order.status.name() == 'CREATED' ? 'bg-secondary' : 
-                                    (order.status.name() == 'DESIGN_PENDING' ? 'bg-info text-dark' : 
-                                    (order.status.name() == 'PURCHASE_PENDING' ? 'bg-warning text-dark' : 
-                                    (order.status.name() == 'READY_FOR_PRODUCTION' ? 'bg-primary' :
-                                    (order.status.name() == 'IN_PRODUCTION' ? 'bg-primary' : 
-                                    (order.status.name() == 'COMPLETED' ? 'bg-success' : 
-                                    (order.status.name() == 'CLOSED' ? 'bg-dark' : 'bg-secondary'))))))}" th:text="${order.status}"></span>
+                                <span class="badge rounded-pill" th:classappend="${order.printStatus.name() == 'DONE' ? 'bg-success' : (order.printStatus.name() == 'IN_PROGRESS' ? 'bg-warning text-dark' : 'bg-light text-dark border')}" th:text="${order.printStatus}"></span>
                             </td>
-                            <td th:text="${order.deliveryDate}"></td>
-                            <td th:text="${order.orderDate}"></td>
+                            <td>
+                                <span class="badge rounded-pill" th:classappend="${order.corruStatus.name() == 'DONE' ? 'bg-success' : (order.corruStatus.name() == 'IN_PROGRESS' ? 'bg-warning text-dark' : 'bg-light text-dark border')}" th:text="${order.corruStatus}"></span>
+                            </td>
+                            <td th:text="${order.quantity}"></td>
+                            <td th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}"></td>
+                            <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${
+                                    order.status.name() == 'COMPLETED' ? 'bg-success' : 
+                                    (order.status.name() == 'CLOSED' ? 'bg-dark' : 'bg-primary')}" th:text="${order.status}"></span>
+                            </td>
                         </tr>
                         <tr th:if="${orders.empty}">
-                            <td colspan="6" class="text-center text-muted">No orders found.</td>
+                            <td colspan="9" class="text-center text-muted py-4">No orders found.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -52,5 +64,24 @@
     </div>
 </div>
 <script th:replace="~{fragments/layout :: scripts}"></script>
+<script>
+    document.getElementById('pendingFilter').addEventListener('change', function() {
+        const showOnlyPending = this.checked;
+        const rows = document.querySelectorAll('#ordersTable tbody tr[data-status]');
+        
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            if (showOnlyPending) {
+                if (status === 'COMPLETED' || status === 'CLOSED') {
+                    row.style.display = 'none';
+                } else {
+                    row.style.display = '';
+                }
+            } else {
+                row.style.display = '';
+            }
+        });
+    });
+</script>
 </body>
 </html>

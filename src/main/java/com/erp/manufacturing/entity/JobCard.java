@@ -26,4 +26,18 @@ public class JobCard {
     private String dieNo;
     private String plateId;
     private Integer copies;
+
+    // Designer Workflow Fields
+    private String designerFileUrl;
+    private String confirmationSsUrl;
+    
+    @Builder.Default
+    private Boolean isNewDie = false;
+    private String dieId;
+    private String dieMaker;
+
+    @Builder.Default
+    private Boolean isNewPallete = false;
+    private String palleteId;
+    private String palleteMaker;
 }

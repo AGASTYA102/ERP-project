@@ -1,6 +1,7 @@
 package com.erp.manufacturing.controller;
 
 import com.erp.manufacturing.entity.Design;
+import com.erp.manufacturing.entity.OrderEntity;
 import com.erp.manufacturing.enums.OrderStatus;
 import com.erp.manufacturing.service.DesignService;
 import com.erp.manufacturing.service.FileService;
@@ -35,7 +36,9 @@ public class DesignerController {
 
     @GetMapping("/upload/{orderId}")
     public String showUploadForm(@PathVariable Long orderId, Model model) {
-        model.addAttribute("orderId", orderId);
+        OrderEntity order = orderService.getOrderById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + orderId));
+        model.addAttribute("order", order);
         model.addAttribute("design", new Design());
         return "designer/upload-form";
     }
@@ -46,6 +49,9 @@ public class DesignerController {
             @RequestParam("orderId") Long orderId,
             @RequestParam("designFile") MultipartFile designFile,
             @RequestParam("confirmationFile") MultipartFile confirmationFile,
+            @RequestParam(required = false) String dieMaker,
+            @RequestParam(required = false) String palleteMaker,
+            @RequestParam(required = false) String palleteId,
             Authentication authentication
     ) {
         String designPath = fileService.storeFile(designFile);
@@ -57,6 +63,10 @@ public class DesignerController {
 
         design.setDesignFilePath(designPath);
         design.setConfirmationFilePath(confirmationPath);
+        
+        // Map the new fields to the design or jobcard
+        design.setDieMaker(dieMaker);
+        // Additional mapping for pallete can be done here or in service
 
         designService.submitDesign(design, orderId, authentication.getName());
         return "redirect:/designer";

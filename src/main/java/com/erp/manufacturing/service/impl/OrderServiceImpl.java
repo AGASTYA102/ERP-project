@@ -134,6 +134,12 @@ public class OrderServiceImpl implements OrderService {
         log.info("[Order {}] Status transition: {} -> {} (By: {})", orderId, oldStatus, newStatus, username);
     }
  
+    @Override
+    @Transactional
+    public void saveOrderManually(OrderEntity order) {
+        orderRepository.save(order);
+    }
+
     private OrderStatus[] getExpectedPreviousStatuses(OrderStatus newStatus) {
         switch (newStatus) {
             case DESIGN_PENDING: return new OrderStatus[]{OrderStatus.CREATED};

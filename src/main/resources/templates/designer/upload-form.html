@@ -6,39 +6,94 @@
     <div th:replace="~{fragments/layout :: sidebar}"></div>
     <div class="main-content">
         <h2 class="mb-4">Upload Design & Confirmation</h2>
-        <div class="card p-4 mx-auto" style="max-width: 600px;">
+        <div class="card p-4 mx-auto mb-4" style="max-width: 800px;">
+            <h5 class="border-bottom pb-2 mb-3">Product Specifications for Order #<span th:text="${order.id}"></span></h5>
+            <div class="row small">
+                <div class="col-md-6">
+                    <p><strong>Client:</strong> <span th:text="${order.client.name}"></span></p>
+                    <p><strong>Product:</strong> <span th:text="${order.product.name}"></span></p>
+                    <p><strong>Quantity:</strong> <span th:text="${order.quantity}"></span></p>
+                </div>
+                <div class="col-md-6 border-start">
+                    <p><strong>Top Ply:</strong> <span th:text="${order.product.topPlyMaterial ?: 'N/A'}"></span></p>
+                    <p><strong>Rest Ply Specs:</strong> <span th:text="${order.product.restPlySpecs ?: 'N/A'}"></span></p>
+                    <p><strong>General Specs:</strong> <span th:text="${order.product.materialSpecs ?: 'N/A'}"></span></p>
+                </div>
+            </div>
+            <div th:if="${order.product.designApprovedFileUrl}" class="mt-2">
+                <a th:href="${order.product.designApprovedFileUrl}" class="btn btn-sm btn-outline-info" target="_blank">View Approved Design (PDF)</a>
+            </div>
+        </div>
+
+        <div class="card p-4 mx-auto shadow-sm" style="max-width: 800px;">
             <form th:action="@{/designer/upload}" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="orderId" th:value="${orderId}">
+                <input type="hidden" name="orderId" th:value="${order.id}">
                 
-                <div class="mb-3">
-                    <label>Design File</label><input type="file" class="form-control" name="designFile" required>
-                </div>
-                <div class="mb-3">
-                    <label>Confirmation File</label><input type="file" class="form-control" name="confirmationFile" required>
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" name="urgent" value="true">
-                    <label class="form-check-label text-danger fw-bold">Mark Urgent</label>
-                </div>
-                <div class="mb-3">
-                    <label>Assign To</label><input type="text" class="form-control" name="assignedTo">
-                </div>
-                <div class="mb-3 row">
-                    <div class="col"><label>Die Type</label>
-                        <select name="dieType" class="form-control">
-                            <option value="NEW">New</option><option value="OLD">Old</option>
-                        </select>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Designer File (Upload Final)</label>
+                        <input type="file" class="form-control" name="designFile" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Confirmation Screenshot (Image)</label>
+                        <input type="file" class="form-control" name="confirmationFile" accept="image/*" required>
                     </div>
                 </div>
-                <div class="mb-3 row">
-                    <div class="col"><label>Die ID</label><input type="text" class="form-control" name="dieId"></div>
-                    <div class="col"><label>Die Maker</label><input type="text" class="form-control" name="dieMaker"></div>
+
+                <div class="row mb-4">
+                    <!-- Die Section -->
+                    <div class="col-md-6 border-end">
+                        <label class="form-label fw-bold">Die Configuration</label>
+                        <select class="form-select mb-2" id="dieStatus" onchange="toggleDieFields()">
+                            <option value="OLD">Use Existing Die</option>
+                            <option value="NEW">Create New Die</option>
+                        </select>
+                        <div id="oldDieField">
+                            <input type="text" class="form-control" name="dieId" placeholder="Enter Die ID">
+                        </div>
+                        <div id="newDieField" style="display:none;">
+                            <input type="text" class="form-control" name="dieMaker" placeholder="Enter Die Maker Name">
+                        </div>
+                    </div>
+
+                    <!-- Palette Section -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Palette Configuration</label>
+                        <select class="form-select mb-2" id="palleteStatus" onchange="togglePalleteFields()">
+                            <option value="OLD">Use Existing Palette</option>
+                            <option value="NEW">Create New Palette</option>
+                        </select>
+                        <div id="oldPalleteField">
+                            <input type="text" class="form-control" name="palleteId" placeholder="Enter Palette ID">
+                        </div>
+                        <div id="newPalleteField" style="display:none;">
+                            <input type="text" class="form-control" name="palleteMaker" placeholder="Enter Palette Maker Name">
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 py-2">Submit Design</button>
+
+                <div class="mb-4 form-check bg-light p-3 rounded">
+                    <input type="checkbox" class="form-check-input ms-0" name="urgent" value="true">
+                    <label class="form-check-label text-danger fw-bold ms-2">Mark as Urgent Priority</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">SUBMIT DESIGN TO PRODUCTION</button>
             </form>
         </div>
     </div>
 </div>
 <script th:replace="~{fragments/layout :: scripts}"></script>
+<script>
+    function toggleDieFields() {
+        const status = document.getElementById('dieStatus').value;
+        document.getElementById('oldDieField').style.display = status === 'OLD' ? 'block' : 'none';
+        document.getElementById('newDieField').style.display = status === 'NEW' ? 'block' : 'none';
+    }
+    function togglePalleteFields() {
+        const status = document.getElementById('palleteStatus').value;
+        document.getElementById('oldPalleteField').style.display = status === 'OLD' ? 'block' : 'none';
+        document.getElementById('newPalleteField').style.display = status === 'NEW' ? 'block' : 'none';
+    }
+</script>
 </body>
 </html>

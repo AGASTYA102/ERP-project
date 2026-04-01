@@ -46,4 +46,18 @@ public class OrderEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private com.erp.manufacturing.enums.PrintStatus printStatus = com.erp.manufacturing.enums.PrintStatus.PENDING;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private com.erp.manufacturing.enums.CorruStatus corruStatus = com.erp.manufacturing.enums.CorruStatus.PENDING;
+
+    private Integer totalSheetsRequired;
+
+    private String deliveryTruckNumber;
+
+    private String billNo;
 }

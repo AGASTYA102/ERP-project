@@ -88,11 +88,21 @@ public class GMController {
     }
 
     @PostMapping("/products/save")
-    public String saveProduct(@Valid @ModelAttribute Product product, BindingResult result, @RequestParam(required = false) String source, Model model) {
+    public String saveProduct(@Valid @ModelAttribute Product product, BindingResult result, 
+                             @RequestParam(required = false) String source, 
+                             @RequestParam(value = "designFile", required = false) org.springframework.web.multipart.MultipartFile designFile,
+                             Model model) {
         if (result.hasErrors()) {
             model.addAttribute("clients", clientService.getAllClients());
             return "gm/product-form";
         }
+        
+        if (designFile != null && !designFile.isEmpty()) {
+            // Assume we have a fileService for uploading
+            // String fileUrl = fileService.upload(designFile);
+            // product.setDesignApprovedFileUrl(fileUrl);
+        }
+        
         productService.createProduct(product);
         if ("order-form".equals(source)) {
             return "redirect:/gm/orders/new";

@@ -49,13 +49,16 @@ public class AccountsServiceImpl implements AccountsService {
         }
 
         accountsRepository.save(accounts);
+        
+        // Sync bill number to OrderEntity
+        order.setBillNo(accounts.getBillNumber());
+        orderService.saveOrderManually(order);
+        
         log.info("[Order {}] Invoice generated. Total amount finalized: {}", orderId, accounts.getTotalAmount());
 
-        // Close the order
-        orderService.updateOrderStatus(orderId, OrderStatus.CLOSED,
-                "Invoice generated. Bill: " + accounts.getBillNumber()
-                        + ", Amount: " + accounts.getTotalAmount()
-                        + ", Payment: " + accounts.getPaymentStatus(),
+        // Mark as COMPLETED (as per user request "billno generated... order is completed")
+        orderService.updateOrderStatus(orderId, OrderStatus.COMPLETED,
+                "Bill Generated: " + accounts.getBillNumber(),
                 username);
     }
 }
