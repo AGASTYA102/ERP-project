@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Accounts Module - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Accounts & Invoicing</h2>
+        <div class="card p-4">
+            <h5 class="mb-3">Pending Invoices (Completed Orders)</h5>
+            <table class="table">
+                <thead><tr><th>Order ID</th><th>Product</th><th>Client</th><th>Quantity</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.id}"></td><td th:text="${order.product.name}"></td>
+                        <td th:text="${order.client.name}"></td><td th:text="${order.quantity}"></td>
+                        <td><a th:href="@{/accounts/invoice/{id}(id=${order.id})}" class="btn btn-sm btn-primary">Generate Invoice</a></td>
+                    </tr>
+                    <tr th:if="${orders.empty}"><td colspan="5" class="text-center text-muted">No pending invoices.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

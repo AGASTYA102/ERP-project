@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Clients - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Clients Directory</h2>
+        <div class="card p-4">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="/gm/clients/new" class="btn btn-primary">+ Add New Client</a>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Name</th><th>GST No</th><th>Contact</th><th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="client : ${clients}">
+                        <td th:text="${client.id}"></td>
+                        <td th:text="${client.name}"></td>
+                        <td th:text="${client.gstNo}"></td>
+                        <td th:text="${client.contact}"></td>
+                        <td th:text="${client.address}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

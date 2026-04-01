@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Error - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4 text-danger">An Error Occurred</h2>
+        <div class="card p-4 mx-auto" style="max-width: 600px;">
+            <div class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${errorMessage}">An unexpected error occurred.</span>
+            </div>
+            <div class="mt-4 text-center">
+                <button type="button" class="btn btn-secondary w-100" onclick="history.back()">Go Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

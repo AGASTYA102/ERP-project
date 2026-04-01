@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Upload Design - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Upload Design & Confirmation</h2>
+        <div class="card p-4 mx-auto" style="max-width: 600px;">
+            <form th:action="@{/designer/upload}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="orderId" th:value="${orderId}">
+                
+                <div class="mb-3">
+                    <label>Design File</label><input type="file" class="form-control" name="designFile" required>
+                </div>
+                <div class="mb-3">
+                    <label>Confirmation File</label><input type="file" class="form-control" name="confirmationFile" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" name="urgent" value="true">
+                    <label class="form-check-label text-danger fw-bold">Mark Urgent</label>
+                </div>
+                <div class="mb-3">
+                    <label>Assign To</label><input type="text" class="form-control" name="assignedTo">
+                </div>
+                <div class="mb-3 row">
+                    <div class="col"><label>Die Type</label>
+                        <select name="dieType" class="form-control">
+                            <option value="NEW">New</option><option value="OLD">Old</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <div class="col"><label>Die ID</label><input type="text" class="form-control" name="dieId"></div>
+                    <div class="col"><label>Die Maker</label><input type="text" class="form-control" name="dieMaker"></div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Submit Design</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

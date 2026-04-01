@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('New Client - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Add New Client</h2>
+        <div class="card p-4 mx-auto" style="max-width: 500px;">
+            <form th:action="@{/gm/clients/save}" th:object="${client}" method="post">
+                <div class="mb-3">
+                    <label>Name</label><input type="text" class="form-control" th:field="*{name}" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+                <div class="mb-3">
+                    <label>GST No</label><input type="text" class="form-control" th:field="*{gstNo}">
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('gstNo')}" th:errors="*{gstNo}"></div>
+                </div>
+                <div class="mb-3">
+                    <label>Contact</label><input type="text" class="form-control" th:field="*{contact}">
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contact')}" th:errors="*{contact}"></div>
+                </div>
+                <div class="mb-3">
+                    <label>Address</label><textarea class="form-control" th:field="*{address}"></textarea>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Save Client</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

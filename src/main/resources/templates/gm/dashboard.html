@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('GM Dashboard - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">GM Dashboard: All Orders</h2>
+        
+        <div class="card p-4">
+            <div class="d-flex justify-content-between mb-3">
+                <h5 class="mb-0">Pipeline Overview</h5>
+                <a href="/gm/orders/new" class="btn btn-primary">+ Punch New Order</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Client</th>
+                            <th>Product</th>
+                            <th>Status</th>
+                            <th>Delivery</th>
+                            <th>PO Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td><a th:href="@{/gm/orders/{id}(id=${order.id})}" th:text="${order.id}"></a></td>
+                            <td th:text="${order.client.name}"></td>
+                            <td th:text="${order.product.name}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${
+                                    order.status.name() == 'CREATED' ? 'bg-secondary' : 
+                                    (order.status.name() == 'DESIGN_PENDING' ? 'bg-info text-dark' : 
+                                    (order.status.name() == 'PURCHASE_PENDING' ? 'bg-warning text-dark' : 
+                                    (order.status.name() == 'READY_FOR_PRODUCTION' ? 'bg-primary' :
+                                    (order.status.name() == 'IN_PRODUCTION' ? 'bg-primary' : 
+                                    (order.status.name() == 'COMPLETED' ? 'bg-success' : 
+                                    (order.status.name() == 'CLOSED' ? 'bg-dark' : 'bg-secondary'))))))}" th:text="${order.status}"></span>
+                            </td>
+                            <td th:text="${order.deliveryDate}"></td>
+                            <td th:text="${order.orderDate}"></td>
+                        </tr>
+                        <tr th:if="${orders.empty}">
+                            <td colspan="6" class="text-center text-muted">No orders found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Order Details - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Order Details #[[${order.id}]]</h2>
+            <a href="/gm" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card p-4 h-100">
+                    <h5 class="mb-3">General Information</h5>
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th class="ps-0" style="width: 30%">Client Name:</th>
+                                <td th:text="${order.client.name}"></td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">Product:</th>
+                                <td th:text="${order.product.name}"></td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">Quantity:</th>
+                                <td th:text="${order.quantity}"></td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">Current Status:</th>
+                                <td>
+                                    <span class="badge" th:classappend="${
+                                        order.status.name() == 'CREATED' ? 'bg-secondary' : 
+                                        (order.status.name() == 'DESIGN_PENDING' ? 'bg-info text-dark' : 
+                                        (order.status.name() == 'PURCHASE_PENDING' ? 'bg-warning text-dark' : 
+                                        (order.status.name() == 'READY_FOR_PRODUCTION' ? 'bg-primary' :
+                                        (order.status.name() == 'IN_PRODUCTION' ? 'bg-primary' : 
+                                        (order.status.name() == 'COMPLETED' ? 'bg-success' : 
+                                        (order.status.name() == 'CLOSED' ? 'bg-dark' : 'bg-secondary'))))))}" th:text="${order.status}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">PO Number:</th>
+                                <td th:text="${order.poNumber}"></td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">Delivery Date:</th>
+                                <td th:text="${order.deliveryDate}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card p-4 h-100">
+                    <h5 class="mb-3">Order Timeline</h5>
+                    <div class="timeline" style="border-left: 2px solid #e9ecef; margin-left: 10px; padding-left: 20px;">
+                        <div th:each="log : ${logs}" class="timeline-step mb-3 position-relative">
+                            <i class="bi bi-circle-fill text-primary position-absolute" style="left: -27px; background: white; border-radius: 50%; font-size: 0.8rem;"></i>
+                            <div class="text-muted small" th:text="${#temporals.format(log.timestamp, 'dd MMM yyyy, HH:mm')}"></div>
+                            <div class="fw-bold" th:text="${log.action}"></div>
+                            <div class="text-secondary small">by <span th:text="${log.performedBy}"></span></div>
+                        </div>
+                        <div th:if="${logs.empty}" class="text-muted">No timeline events found.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

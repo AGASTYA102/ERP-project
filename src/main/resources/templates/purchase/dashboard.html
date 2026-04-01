@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Purchase & Stock - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Purchase / Material Queue</h2>
+        <div class="card p-4 mb-4">
+            <h5 class="mb-3">Orders Pending Material Check</h5>
+            <table class="table align-middle">
+                <thead><tr><th>Order ID</th><th>Product</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.id}"></td><td th:text="${order.product.name}"></td>
+                        <td><a th:href="@{/purchase/process/{id}(id=${order.id})}" class="btn btn-sm btn-primary">Process Stock Check</a></td>
+                    </tr>
+                    <tr th:if="${orders.empty}"><td colspan="3" class="text-center text-muted">No pending purchases.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card p-4">
+            <h5 class="mb-3">Current Stock Inventory</h5>
+            <table class="table">
+                <thead><tr><th>Material</th><th>Type</th><th>Qty</th></tr></thead>
+                <tbody>
+                    <tr th:each="stock : ${stocks}">
+                        <td th:text="${stock.materialName}"></td><td th:text="${stock.type}"></td><td th:text="${stock.quantity}"></td>
+                    </tr>
+                    <tr th:if="${stocks.empty}"><td colspan="3" class="text-center text-muted">No stock entries found.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

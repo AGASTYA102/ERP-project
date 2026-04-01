@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Generate Invoice - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Generate Invoice</h2>
+        <div class="card p-4 mx-auto" style="max-width: 500px;">
+            <form th:action="@{/accounts/invoice}" th:object="${accounts}" method="post">
+                <input type="hidden" name="orderId" th:value="${orderId}">
+                <input type="hidden" id="orderQuantity" th:value="${order.quantity}">
+                
+                <div class="mb-3">
+                    <label>Quantity</label>
+                    <input type="text" class="form-control" th:value="${order.quantity}" disabled>
+                </div>
+                <div class="mb-3">
+                    <label>Final Rate (Per Unit)</label><input type="number" step="0.01" class="form-control" id="rateInput" th:field="*{rate}" required>
+                </div>
+                <div class="mb-3">
+                    <label>Total Amount Payable</label><input type="number" step="0.01" class="form-control" id="totalAmountDisplay" readonly>
+                </div>
+                <div class="mb-3">
+                    <label>Bill/Invoice Number</label><input type="text" class="form-control" th:field="*{billNumber}" required>
+                </div>
+                <div class="mb-4">
+                    <label>Payment Status</label>
+                    <select th:field="*{paymentStatus}" class="form-select">
+                        <option value="PENDING">Pending</option>
+                        <option value="PARTIAL">Partial</option>
+                        <option value="PAID">Paid</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Generate & Close Order</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rateInput = document.getElementById('rateInput');
+        const qtyField = document.getElementById('orderQuantity');
+        const totalAmountDisplay = document.getElementById('totalAmountDisplay');
+        
+        function calculateTotal() {
+            const rate = parseFloat(rateInput.value) || 0;
+            const qty = parseFloat(qtyField.value) || 0;
+            totalAmountDisplay.value = (rate * qty).toFixed(2);
+        }
+        
+        rateInput.addEventListener('input', calculateTotal);
+        calculateTotal();
+    });
+</script>
+</body>
+</html>

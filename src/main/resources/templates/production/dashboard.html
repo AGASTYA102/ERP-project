@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Production Board - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Production Board</h2>
+        
+        <div class="card p-4 border-primary">
+            <h5 class="mb-3">Ready for Production (Waiting to start)</h5>
+            <table class="table">
+                <thead><tr><th>Order ID</th><th>Product</th><th>Client</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr th:each="order : ${readyOrders}">
+                        <td th:text="${order.id}"></td><td th:text="${order.product.name}"></td><td th:text="${order.client.name}"></td>
+                        <td>
+                            <form th:action="@{/production/start/{id}(id=${order.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-success">Start Production</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card p-4 border-warning mt-4">
+            <h5 class="mb-3">Work In Progress (In Production)</h5>
+            <table class="table">
+                <thead><tr><th>Order ID</th><th>Product</th><th>Client</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr th:each="order : ${inProductionOrders}">
+                        <td th:text="${order.id}"></td><td th:text="${order.product.name}"></td><td th:text="${order.client.name}"></td>
+                        <td><a th:href="@{/production/complete/{id}(id=${order.id})}" class="btn btn-sm btn-warning text-dark">Log Completion</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Design Queue - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Design Queue (Action Required)</h2>
+        <div class="card p-4">
+            <table class="table align-middle">
+                <thead>
+                    <tr><th>Order ID</th><th>Product</th><th>Client</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.id}"></td>
+                        <td th:text="${order.product.name}"></td>
+                        <td th:text="${order.client.name}"></td>
+                        <td><a th:href="@{/designer/upload/{id}(id=${order.id})}" class="btn btn-sm btn-primary">Process Design</a></td>
+                    </tr>
+                    <tr th:if="${orders.empty}"><td colspan="4" class="text-center text-muted">No pending designs.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

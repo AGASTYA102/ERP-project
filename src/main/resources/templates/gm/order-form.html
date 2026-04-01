@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Punch Order - Nexus ERP')}"></head>
+<body>
+<div class="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div class="main-content">
+        <h2 class="mb-4">Punch New Order</h2>
+        
+        <div class="card p-4 mx-auto" style="max-width: 600px;">
+            <form th:action="@{/gm/orders/save}" th:object="${order}" method="post">
+                
+                <div class="mb-3 d-flex justify-content-between align-items-end">
+                    <div class="flex-grow-1 me-2">
+                        <label class="form-label">Client</label>
+                        <select class="form-select" th:field="*{client.id}" required>
+                            <option value="" disabled selected>Select Client...</option>
+                            <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.name}"></option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('client.id')}" th:errors="*{client.id}"></div>
+                    </div>
+                    <a href="/gm/clients/new" class="btn btn-outline-primary">+ New</a>
+                </div>
+
+                <div class="mb-3 d-flex justify-content-between align-items-end">
+                    <div class="flex-grow-1 me-2">
+                        <label class="form-label">Product</label>
+                        <select class="form-select" th:field="*{product.id}" required>
+                            <option value="" disabled selected>Select Product...</option>
+                            <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}"></option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('product.id')}" th:errors="*{product.id}"></div>
+                    </div>
+                    <a href="/gm/products/new" class="btn btn-outline-primary">+ New</a>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-control" th:field="*{quantity}" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">PO Number</label>
+                    <input type="text" class="form-control" th:field="*{poNumber}">
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('poNumber')}" th:errors="*{poNumber}"></div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Delivery Date</label>
+                    <input type="date" class="form-control" th:field="*{deliveryDate}" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('deliveryDate')}" th:errors="*{deliveryDate}"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">Create Order</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>
