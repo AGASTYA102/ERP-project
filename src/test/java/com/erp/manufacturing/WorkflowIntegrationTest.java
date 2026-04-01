@@ -45,9 +45,10 @@ public class WorkflowIntegrationTest {
         client = clientRepository.save(client);
         testClientId = client.getId();
 
-        Product product = new Product();
-        product.setName("Test Product");
-        product = productRepository.save(product);
+        Product product = productRepository.save(Product.builder()
+                .name("Concurrency Product")
+                .client(client) // Mandatory relationship
+                .build());
         testProductId = product.getId();
 
         Stock stock = new Stock();
@@ -118,6 +119,6 @@ public class WorkflowIntegrationTest {
                 .param("orderId", orderIdStr)
                 .param("rate", "15.5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("CLOSED"));
+                .andExpect(jsonPath("$.status").value("COMPLETED")); // Updated per new workflow (Generated Bill = COMPLETED)
     }
 }

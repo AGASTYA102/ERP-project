@@ -120,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void updateOrderStatus(Long orderId, OrderStatus newStatus, String action, String username) {
-        OrderEntity order = orderRepository.findById(orderId)
+        OrderEntity order = getOrderById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with ID: " + orderId));
         
         OrderStatus oldStatus = order.getStatus();
@@ -147,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
             case PURCHASE_PENDING: return new OrderStatus[]{OrderStatus.DESIGN_COMPLETED, OrderStatus.DESIGN_PENDING}; // Allow from both for flexibility
             case READY_FOR_PRODUCTION: return new OrderStatus[]{OrderStatus.PURCHASE_PENDING};
             case IN_PRODUCTION: return new OrderStatus[]{OrderStatus.READY_FOR_PRODUCTION, OrderStatus.IN_PRODUCTION};
-            case COMPLETED: return new OrderStatus[]{OrderStatus.IN_PRODUCTION, OrderStatus.READY_FOR_PRODUCTION};
+            case COMPLETED: return new OrderStatus[]{OrderStatus.IN_PRODUCTION, OrderStatus.READY_FOR_PRODUCTION, OrderStatus.COMPLETED};
             case CLOSED: return new OrderStatus[]{OrderStatus.COMPLETED};
             default: return new OrderStatus[]{};
         }

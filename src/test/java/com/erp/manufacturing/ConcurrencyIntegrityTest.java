@@ -55,14 +55,17 @@ public class ConcurrencyIntegrityTest {
     public void setup() {
         orderLogRepository.deleteAll();
         orderRepository.deleteAll();
-        stockRepository.deleteAll();
+        productRepository.deleteAll(); // Must delete products before clients due to FK
         clientRepository.deleteAll();
-        productRepository.deleteAll();
+        stockRepository.deleteAll();
  
         Client client = clientRepository.save(Client.builder().name("Concurrency Client").build());
         testClientId = client.getId();
  
-        Product product = productRepository.save(Product.builder().name("Concurrency Product").build());
+        Product product = productRepository.save(Product.builder()
+                .name("Concurrency Product")
+                .client(client) // Mandatory relationship
+                .build());
         testProductId = product.getId();
     }
  

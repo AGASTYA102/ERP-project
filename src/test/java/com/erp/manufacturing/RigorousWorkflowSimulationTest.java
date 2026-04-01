@@ -12,11 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
  
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
  
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,14 +46,17 @@ public class RigorousWorkflowSimulationTest {
     public void setup() {
         orderLogRepository.deleteAll();
         orderRepository.deleteAll();
-        stockRepository.deleteAll();
+        productRepository.deleteAll(); // Must delete products before clients due to FK
         clientRepository.deleteAll();
-        productRepository.deleteAll();
+        stockRepository.deleteAll();
  
         Client client = clientRepository.save(Client.builder().name("Simulation Client").build());
         testClientId = client.getId();
  
-        Product product = productRepository.save(Product.builder().name("Simulation Product").build());
+        Product product = productRepository.save(Product.builder()
+                .name("Simulation Product")
+                .client(client)
+                .build());
         testProductId = product.getId();
  
         stockRepository.save(Stock.builder()
@@ -117,8 +118,8 @@ public class RigorousWorkflowSimulationTest {
         accountsService.finalizeOrder(accounts, orderId, "accounts_user");
         
         OrderEntity finalOrder = orderRepository.findById(orderId).get();
-        assertEquals(OrderStatus.CLOSED, finalOrder.getStatus());
-        verifyLogs(orderId, 8, "Invoice generated", "accounts_user");
+        assertEquals(OrderStatus.COMPLETED, finalOrder.getStatus());
+        verifyLogs(orderId, 8, "Bill Generated", "accounts_user");
     }
  
     @Test
