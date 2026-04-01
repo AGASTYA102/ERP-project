@@ -4,7 +4,6 @@ import com.erp.manufacturing.entity.Client;
 import com.erp.manufacturing.entity.OrderEntity;
 import com.erp.manufacturing.entity.Product;
 import com.erp.manufacturing.service.ClientService;
-import com.erp.manufacturing.service.JobCardService;
 import com.erp.manufacturing.service.OrderService;
 import com.erp.manufacturing.service.ProductService;
 import org.springframework.security.core.Authentication;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import com.erp.manufacturing.entity.JobCard;
 
 @Controller
 @RequestMapping("/gm")
@@ -24,14 +22,12 @@ public class GMController {
     private final OrderService orderService;
     private final ClientService clientService;
     private final ProductService productService;
-    private final JobCardService jobCardService;
     private final com.erp.manufacturing.service.OrderLogService orderLogService;
 
-    public GMController(OrderService orderService, ClientService clientService, ProductService productService, JobCardService jobCardService, com.erp.manufacturing.service.OrderLogService orderLogService) {
+    public GMController(OrderService orderService, ClientService clientService, ProductService productService, com.erp.manufacturing.service.OrderLogService orderLogService) {
         this.orderService = orderService;
         this.clientService = clientService;
         this.productService = productService;
-        this.jobCardService = jobCardService;
         this.orderLogService = orderLogService;
     }
 
@@ -110,17 +106,9 @@ public class GMController {
             model.addAttribute("products", productService.getAllProducts());
             return "gm/order-form";
         }
-        OrderEntity savedOrder = orderService.createOrder(order, auth.getName());
         
-        // Auto-create JobCard
-        Product product = savedOrder.getProduct();
-        JobCard jobCard = JobCard.builder()
-                .order(savedOrder)
-                .dieNo(product.getDieNo())
-                .plateId(product.getPlateId())
-                .sheetSize(product.getSheetSize())
-                .build();
-        jobCardService.createJobCard(jobCard);
+        // Use the atomic service method instead of segmented controller logic
+        orderService.punchOrder(order, auth.getName());
         
         return "redirect:/gm";
     }

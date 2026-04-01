@@ -9,6 +9,8 @@ import com.erp.manufacturing.repository.OrderRepository;
 import com.erp.manufacturing.repository.ProductRepository;
 import com.erp.manufacturing.service.OrderLogService;
 import com.erp.manufacturing.service.OrderService;
+import com.erp.manufacturing.service.JobCardService;
+import com.erp.manufacturing.entity.JobCard;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +28,18 @@ public class OrderServiceImpl implements OrderService {
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
     private final OrderLogService orderLogService;
+    private final JobCardService jobCardService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             ClientRepository clientRepository,
                             ProductRepository productRepository,
-                            OrderLogService orderLogService) {
+                            OrderLogService orderLogService,
+                            JobCardService jobCardService) {
         this.orderRepository = orderRepository;
         this.clientRepository = clientRepository;
         this.productRepository = productRepository;
         this.orderLogService = orderLogService;
+        this.jobCardService = jobCardService;
     }
 
     @Override
@@ -73,6 +78,25 @@ public class OrderServiceImpl implements OrderService {
         log.info("[Order {}] Initial transition: {} -> {}", savedOrder.getId(), OrderStatus.CREATED, OrderStatus.DESIGN_PENDING);
 
         return savedOrder;
+    }
+
+    @Override
+    @Transactional
+    public void punchOrder(OrderEntity order, String username) {
+        // Create the order
+        OrderEntity savedOrder = createOrder(order, username);
+        
+        // Auto-create JobCard (Within the same transaction)
+        Product product = savedOrder.getProduct();
+        JobCard jobCard = JobCard.builder()
+                .order(savedOrder)
+                .dieNo(product.getDieNo())
+                .plateId(product.getPlateId())
+                .sheetSize(product.getSheetSize())
+                .build();
+        
+        jobCardService.createJobCard(jobCard);
+        log.info("[Order {}] JobCard created successfully under atomic transaction", savedOrder.getId());
     }
 
     @Override
