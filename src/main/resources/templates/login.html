@@ -15,8 +15,14 @@
 
     <form th:action="@{/login}" method="post">
         <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required autofocus>
+            <label for="username" class="form-label">Select User</label>
+            <select class="form-control" id="username" name="username" required autofocus>
+                <option value="gm">General Manager (gm)</option>
+                <option value="designer">Designer (designer)</option>
+                <option value="purchase">Purchase Manager (purchase)</option>
+                <option value="production">Production Manager (production)</option>
+                <option value="accounts">Accounts (accounts)</option>
+            </select>
         </div>
         <div class="mb-4">
             <label for="password" class="form-label">Password</label>
