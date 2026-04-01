@@ -128,7 +128,7 @@ public class GMController {
     }
 
     @PostMapping("/orders/save")
-    public String saveOrder(@Valid @ModelAttribute OrderEntity order, BindingResult result, Authentication auth, Model model) {
+    public String saveOrder(@Valid @ModelAttribute("order") OrderEntity order, BindingResult result, Authentication auth, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("clients", clientService.getAllClients());
             model.addAttribute("products", productService.getAllProducts());

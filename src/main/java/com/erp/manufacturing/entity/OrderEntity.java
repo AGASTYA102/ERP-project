@@ -42,7 +42,6 @@ public class OrderEntity {
 
     private LocalDate orderDate;
 
-    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
