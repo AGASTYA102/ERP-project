@@ -19,7 +19,7 @@ public class FileService {
 
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("pdf", "png", "jpg", "jpeg");
     private static final Set<String> ALLOWED_MIME_TYPES = Set.of("application/pdf", "image/png", "image/jpeg");
-    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    private static final long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 
     private final Tika tika = new Tika();
 
@@ -37,7 +37,7 @@ public class FileService {
             throw new IllegalArgumentException("Cannot upload an empty file");
         }
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("File size exceeds the 5MB maximum limit");
+            throw new IllegalArgumentException("File size exceeds the 50MB maximum limit");
         }
         
         try {
