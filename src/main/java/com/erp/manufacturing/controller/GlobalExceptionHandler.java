@@ -119,9 +119,9 @@ public class GlobalExceptionHandler extends org.springframework.web.servlet.mvc.
     public Object handleGeneralException(Exception ex, Model model, HttpServletRequest request) {
         log.error("Unhandled exception occurred: ", ex);
         if (isRestRequest(request)) {
-            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected system error occurred.");
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error: " + ex.getMessage());
         }
-        model.addAttribute("errorMessage", "An unexpected system error occurred. Please contact IT support.");
+        model.addAttribute("errorMessage", "System Error: " + ex.getMessage() + " (Please screenshot this)");
         return "error";
     }
  
