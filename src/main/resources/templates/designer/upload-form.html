@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div th:if="${order.product.designApprovedFileUrl}" class="mt-2">
-                <a th:href="${order.product.designApprovedFileUrl}" class="btn btn-sm btn-outline-info" target="_blank">View Approved Design (PDF)</a>
+                <a th:href="@{'/' + ${order.product.designApprovedFileUrl}}" class="btn btn-sm btn-outline-info" target="_blank">View Approved Design (PDF)</a>
             </div>
         </div>
 
