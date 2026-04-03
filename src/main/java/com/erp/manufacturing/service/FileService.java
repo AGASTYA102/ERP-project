@@ -88,10 +88,13 @@ public class FileService {
             // Return Public URL
             return supabaseUrl + "/storage/v1/object/public/" + supabaseBucket + "/" + fileName;
 
+        } catch (org.springframework.web.client.HttpStatusCodeException ex) {
+            log.error("Supabase API Error: {}", ex.getResponseBodyAsString());
+            throw new RuntimeException("Supabase API Error (" + ex.getStatusCode() + "): " + ex.getResponseBodyAsString(), ex);
         } catch (IOException ex) {
             throw new RuntimeException("Could not read file for upload.", ex);
         } catch (Exception ex) {
-            throw new RuntimeException("Failed to upload to remote storage.", ex);
+            throw new RuntimeException("Failed to upload: " + ex.getMessage(), ex);
         }
     }
 
