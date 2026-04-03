@@ -24,6 +24,7 @@ public class Product {
     @jakarta.validation.constraints.NotNull(message = "Client is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Client client;
 
     private Double ratePerUnit;

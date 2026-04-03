@@ -6,9 +6,45 @@
     <div th:replace="~{fragments/layout :: sidebar}"></div>
     <div class="main-content">
         <h2 class="mb-4">Process Material Check</h2>
+        
+        <div class="card p-4 mx-auto mb-4" style="max-width: 800px;">
+            <h5 class="border-bottom pb-2 mb-3">Product Specifications for Order #<span th:text="${order.id}"></span></h5>
+            <div class="row small">
+                <div class="col-md-6">
+                    <p><strong>Client:</strong> <span th:text="${order.client.name}"></span></p>
+                    <p><strong>Product:</strong> <span th:text="${order.product.name}"></span></p>
+                    <p><strong>Quantity:</strong> <span th:text="${order.quantity}"></span></p>
+                </div>
+                <div class="col-md-6 border-start">
+                    <p><strong>Top Ply:</strong> <span th:text="${order.product.topPlyMaterial ?: 'N/A'}"></span></p>
+                    <p><strong>Rest Ply Specs:</strong> <span th:text="${order.product.restPlySpecs ?: 'N/A'}"></span></p>
+                    <p><strong>General Specs:</strong> <span th:text="${order.product.materialSpecs ?: 'N/A'}"></span></p>
+                </div>
+            </div>
+            <div th:if="${order.product.designApprovedFileUrl}" class="mt-2">
+                <a th:href="${order.product.designApprovedFileUrl}" class="btn btn-sm btn-outline-info" target="_blank">View Approved Design (PDF)</a>
+            </div>
+            
+            <div th:if="${design != null}" class="mt-3 border-top pt-3">
+                <h6>Designer Uploaded Files & Details</h6>
+                <div th:if="${design.designFilePath}">
+                    <a th:href="${design.designFilePath}" class="btn btn-sm btn-outline-primary" target="_blank">View Final Design File</a>
+                </div>
+                <div th:if="${design.confirmationFilePath}" class="mt-2">
+                    <a th:href="${design.confirmationFilePath}" class="btn btn-sm btn-outline-secondary" target="_blank">View Confirmation Screenshot</a>
+                </div>
+                <div class="mt-2 small">
+                    <p th:if="${design.dieType}"><strong>Die Status:</strong> <span th:text="${design.dieType == 'NEW' ? 'New Die Required' : 'Existing Die'}"></span></p>
+                    <p th:if="${design.dieId}"><strong>Die ID:</strong> <span th:text="${design.dieId}"></span></p>
+                    <p th:if="${design.dieMaker}"><strong>Die Maker:</strong> <span th:text="${design.dieMaker}"></span></p>
+                    <p th:if="${design.urgent}" class="text-danger fw-bold">🔥 URGENT PRIORITY</p>
+                </div>
+            </div>
+        </div>
+
         <div class="card p-4 mx-auto" style="max-width: 500px;">
             <form th:action="@{/purchase/process}" method="post">
-                <input type="hidden" name="orderId" th:value="${orderId}">
+                <input type="hidden" name="orderId" th:value="${order.id}">
                 <div class="mb-3">
                     <label>Material Name</label><input type="text" class="form-control" name="materialName" required>
                 </div>
