@@ -77,7 +77,7 @@ public class FileService {
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             log.info("Successfully stored file: {} as {}", originalFileName, fileName);
-            return targetLocation.toString();
+            return targetLocation.toString().replace("\\", "/");
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file. Please try again!", ex);
         }
