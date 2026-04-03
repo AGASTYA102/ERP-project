@@ -44,12 +44,15 @@
                     <!-- Die Section -->
                     <div class="col-md-6 border-end">
                         <label class="form-label fw-bold">Die Configuration</label>
-                        <select class="form-select mb-2" id="dieStatus" onchange="toggleDieFields()">
+                        <select class="form-select mb-2" id="dieStatus" name="dieType" onchange="toggleDieFields()">
                             <option value="OLD">Use Existing Die</option>
                             <option value="NEW">Create New Die</option>
                         </select>
                         <div id="oldDieField">
-                            <input type="text" class="form-control" name="dieId" placeholder="Enter Die ID">
+                            <input type="text" class="form-control" name="dieId" list="dieIds" placeholder="Enter or Select Die ID" autocomplete="off">
+                            <datalist id="dieIds">
+                                <option th:each="id : ${existingDies}" th:value="${id}"></option>
+                            </datalist>
                         </div>
                         <div id="newDieField" style="display:none;">
                             <input type="text" class="form-control" name="dieMaker" placeholder="Enter Die Maker Name">
@@ -59,12 +62,15 @@
                     <!-- Palette Section -->
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Palette Configuration</label>
-                        <select class="form-select mb-2" id="palleteStatus" onchange="togglePalleteFields()">
+                        <select class="form-select mb-2" id="palleteStatus" name="palleteType" onchange="togglePalleteFields()">
                             <option value="OLD">Use Existing Palette</option>
                             <option value="NEW">Create New Palette</option>
                         </select>
                         <div id="oldPalleteField">
-                            <input type="text" class="form-control" name="palleteId" placeholder="Enter Palette ID">
+                            <input type="text" class="form-control" name="palleteId" list="palleteIds" placeholder="Enter or Select Palette ID" autocomplete="off">
+                            <datalist id="palleteIds">
+                                <option th:each="id : ${existingPalletes}" th:value="${id}"></option>
+                            </datalist>
                         </div>
                         <div id="newPalleteField" style="display:none;">
                             <input type="text" class="form-control" name="palleteMaker" placeholder="Enter Palette Maker Name">

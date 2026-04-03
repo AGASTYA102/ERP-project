@@ -47,4 +47,14 @@ public class DesignServiceImpl implements DesignService {
         orderService.updateOrderStatus(orderId, OrderStatus.PURCHASE_PENDING,
                 "Sent to Purchase Department for material check", username);
     }
+
+    @Override
+    public java.util.List<String> getDistinctDieIds() {
+        return designRepository.findDistinctDieIds();
+    }
+
+    @Override
+    public java.util.List<String> getDistinctPalleteIds() {
+        return designRepository.findDistinctPalleteIds();
+    }
 }

@@ -40,6 +40,8 @@ public class DesignerController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + orderId));
         model.addAttribute("order", order);
         model.addAttribute("design", new Design());
+        model.addAttribute("existingDies", designService.getDistinctDieIds());
+        model.addAttribute("existingPalletes", designService.getDistinctPalleteIds());
         return "designer/upload-form";
     }
 
@@ -49,9 +51,6 @@ public class DesignerController {
             @RequestParam("orderId") Long orderId,
             @RequestParam("designFile") MultipartFile designFile,
             @RequestParam("confirmationFile") MultipartFile confirmationFile,
-            @RequestParam(required = false) String dieMaker,
-            @RequestParam(required = false) String palleteMaker,
-            @RequestParam(required = false) String palleteId,
             Authentication authentication
     ) {
         String designPath = fileService.storeFile(designFile);
@@ -63,10 +62,6 @@ public class DesignerController {
 
         design.setDesignFilePath(designPath);
         design.setConfirmationFilePath(confirmationPath);
-        
-        // Map the new fields to the design or jobcard
-        design.setDieMaker(dieMaker);
-        // Additional mapping for pallete can be done here or in service
 
         designService.submitDesign(design, orderId, authentication.getName());
         return "redirect:/designer";
