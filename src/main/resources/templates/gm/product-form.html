@@ -55,13 +55,9 @@
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('sheetSize')}" th:errors="*{sheetSize}"></div>
                     </div>
                 </div>
-                <div class="mb-3 row">
-                    <div class="col"><label>Die No</label><input type="text" class="form-control" th:field="*{dieNo}">
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dieNo')}" th:errors="*{dieNo}"></div>
-                    </div>
-                    <div class="col"><label>Plate ID</label><input type="text" class="form-control" th:field="*{plateId}">
-                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('plateId')}" th:errors="*{plateId}"></div>
-                    </div>
+                <div class="mb-3">
+                    <label>Die No</label><input type="text" class="form-control" th:field="*{dieNo}">
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dieNo')}" th:errors="*{dieNo}"></div>
                 </div>
                 <div class="mb-3">
                     <label>Spec</label><textarea class="form-control" th:field="*{materialSpecs}"></textarea>

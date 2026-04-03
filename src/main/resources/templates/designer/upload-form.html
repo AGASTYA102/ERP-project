@@ -41,26 +41,8 @@
                 </div>
 
                 <div class="row mb-4">
-                    <!-- Die Section -->
-                    <div class="col-md-6 border-end">
-                        <label class="form-label fw-bold">Die Configuration</label>
-                        <select class="form-select mb-2" id="dieStatus" name="dieType" onchange="toggleDieFields()">
-                            <option value="OLD">Use Existing Die</option>
-                            <option value="NEW">Create New Die</option>
-                        </select>
-                        <div id="oldDieField">
-                            <input type="text" class="form-control" name="dieId" list="dieIds" placeholder="Enter or Select Die ID" autocomplete="off">
-                            <datalist id="dieIds">
-                                <option th:each="id : ${existingDies}" th:value="${id}"></option>
-                            </datalist>
-                        </div>
-                        <div id="newDieField" style="display:none;">
-                            <input type="text" class="form-control" name="dieMaker" placeholder="Enter Die Maker Name">
-                        </div>
-                    </div>
-
                     <!-- Palette Section -->
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label class="form-label fw-bold">Palette Configuration</label>
                         <select class="form-select mb-2" id="palleteStatus" name="palleteType" onchange="togglePalleteFields()">
                             <option value="OLD">Use Existing Palette</option>
@@ -90,11 +72,6 @@
 </div>
 <script th:replace="~{fragments/layout :: scripts}"></script>
 <script>
-    function toggleDieFields() {
-        const status = document.getElementById('dieStatus').value;
-        document.getElementById('oldDieField').style.display = status === 'OLD' ? 'block' : 'none';
-        document.getElementById('newDieField').style.display = status === 'NEW' ? 'block' : 'none';
-    }
     function togglePalleteFields() {
         const status = document.getElementById('palleteStatus').value;
         document.getElementById('oldPalleteField').style.display = status === 'OLD' ? 'block' : 'none';

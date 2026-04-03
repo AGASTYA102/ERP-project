@@ -40,7 +40,6 @@ public class DesignerController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + orderId));
         model.addAttribute("order", order);
         model.addAttribute("design", new Design());
-        model.addAttribute("existingDies", designService.getDistinctDieIds());
         model.addAttribute("existingPalletes", designService.getDistinctPalleteIds());
         return "designer/upload-form";
     }
