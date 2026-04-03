@@ -1,17 +1,15 @@
 package com.erp.manufacturing.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,21 +23,14 @@ public class FileService {
 
     private final Tika tika = new Tika();
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    @Value("${supabase.url}")
+    private String supabaseUrl;
 
-    @PostConstruct
-    public void init() {
-        try {
-            Path path = Paths.get(uploadDir);
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
-                log.info("Created upload directory: {}", path.toAbsolutePath());
-            }
-        } catch (IOException e) {
-            log.error("Could not create upload directory: {}", uploadDir, e);
-        }
-    }
+    @Value("${supabase.key}")
+    private String supabaseKey;
+
+    @Value("${supabase.bucket:erp-uploads}")
+    private String supabaseBucket;
 
     public String storeFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -48,12 +39,8 @@ public class FileService {
         if (file.getSize() > MAX_FILE_SIZE) {
             throw new IllegalArgumentException("File size exceeds the 5MB maximum limit");
         }
+        
         try {
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
             // 1. Sanitize original filename and extract extension
             String originalFileName = Paths.get(file.getOriginalFilename()).getFileName().toString();
             String extension = getFileExtension(originalFileName).toLowerCase();
@@ -70,16 +57,41 @@ public class FileService {
                 throw new IllegalArgumentException("File content type '" + mimeType + "' is not allowed.");
             }
 
-            // 4. Generate Strict UUID Filename (prevents path traversal and collisions)
+            // 4. Generate Strict UUID Filename
             String fileName = UUID.randomUUID().toString() + "." + extension;
 
-            Path targetLocation = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            // 5. Upload to Supabase Storage via REST
+            String endpoint = supabaseUrl + "/storage/v1/object/" + supabaseBucket + "/" + fileName;
 
-            log.info("Successfully stored file: {} as {}", originalFileName, fileName);
-            return targetLocation.toString().replace("\\", "/");
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(supabaseKey);
+            headers.set("apikey", supabaseKey);
+            headers.setContentType(MediaType.parseMediaType(mimeType));
+
+            HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
+            
+            ResponseEntity<String> response = restTemplate.exchange(
+                    endpoint, 
+                    HttpMethod.POST, 
+                    requestEntity, 
+                    String.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                log.error("Supabase upload failed: {}", response.getBody());
+                throw new RuntimeException("Cloud storage provider rejected the upload.");
+            }
+
+            log.info("Successfully uploaded file to Supabase: {} as {}", originalFileName, fileName);
+            
+            // Return Public URL
+            return supabaseUrl + "/storage/v1/object/public/" + supabaseBucket + "/" + fileName;
+
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store file. Please try again!", ex);
+            throw new RuntimeException("Could not read file for upload.", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to upload to remote storage.", ex);
         }
     }
 
