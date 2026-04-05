@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "erp_orders")
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -42,21 +42,8 @@ public class OrderEntity {
 
     private LocalDate orderDate;
 
+    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
-
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private com.erp.manufacturing.enums.PrintStatus printStatus = com.erp.manufacturing.enums.PrintStatus.PENDING;
-
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private com.erp.manufacturing.enums.CorruStatus corruStatus = com.erp.manufacturing.enums.CorruStatus.PENDING;
-
-    private Integer totalSheetsRequired;
-
-    private String deliveryTruckNumber;
-
-    private String billNo;
 }

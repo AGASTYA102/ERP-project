@@ -5,14 +5,12 @@ import com.erp.manufacturing.enums.OrderStatus;
 import com.erp.manufacturing.service.AccountsService;
 import com.erp.manufacturing.service.OrderService;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/accounts")
-@PreAuthorize("hasRole('ACCOUNTS')")
 public class AccountsController {
 
     private final OrderService orderService;

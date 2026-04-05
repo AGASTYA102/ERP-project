@@ -13,15 +13,13 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th><th>Name</th><th>Client ID</th><th>Client Name</th><th>Rate</th><th>Dimensions</th><th>Sheet Size</th>
+                        <th>ID</th><th>Name</th><th>Rate</th><th>Dimensions</th><th>Sheet Size</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="product : ${products}">
                         <td th:text="${product.id}"></td>
                         <td th:text="${product.name}"></td>
-                        <td th:text="${product.client != null ? product.client.id : 'N/A'}"></td>
-                        <td th:text="${product.client != null ? product.client.name : 'N/A'}"></td>
                         <td th:text="${product.ratePerUnit}"></td>
                         <td th:text="${product.dimensions}"></td>
                         <td th:text="${product.sheetSize}"></td>

@@ -9,8 +9,7 @@
         <div class="card p-4 mx-auto" style="max-width: 600px;">
             <div class="alert alert-danger" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <span th:text="${errorMessage != null ? errorMessage : (message != null ? message : 'An unexpected system error occurred.')}">An unexpected error occurred.</span>
-                <p class="mb-0 mt-2 small text-danger" th:if="${status != null}" th:text="'Error Code: ' + ${status} + ' - ' + ${error}"></p>
+                <span th:text="${errorMessage}">An unexpected error occurred.</span>
             </div>
             <div class="mt-4 text-center">
                 <button type="button" class="btn btn-secondary w-100" onclick="history.back()">Go Back</button>

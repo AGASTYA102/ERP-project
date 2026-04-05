@@ -1,19 +1,16 @@
 package com.erp.manufacturing.controller;
 
-import com.erp.manufacturing.entity.OrderEntity;
 import com.erp.manufacturing.entity.Production;
 import com.erp.manufacturing.enums.OrderStatus;
 import com.erp.manufacturing.service.OrderService;
 import com.erp.manufacturing.service.ProductionService;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/production")
-@PreAuthorize("hasRole('PRODUCTION_MANAGER')")
 public class ProductionController {
 
     private final OrderService orderService;
@@ -34,29 +31,6 @@ public class ProductionController {
     @PostMapping("/start/{orderId}")
     public String startProduction(@PathVariable Long orderId, Authentication auth) {
         orderService.updateOrderStatus(orderId, OrderStatus.IN_PRODUCTION, "Production started", auth.getName());
-        return "redirect:/production";
-    }
-
-    @PostMapping("/update-status")
-    public String updateStatus(
-            @RequestParam Long orderId,
-            @RequestParam com.erp.manufacturing.enums.PrintStatus printStatus,
-            @RequestParam com.erp.manufacturing.enums.CorruStatus corruStatus,
-            @RequestParam(required = false) Integer totalSheets,
-            @RequestParam(required = false) String truckNumber,
-            Authentication auth
-    ) {
-        OrderEntity order = orderService.getOrderById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + orderId));
-        
-        order.setPrintStatus(printStatus);
-        order.setCorruStatus(corruStatus);
-        order.setTotalSheetsRequired(totalSheets);
-        order.setDeliveryTruckNumber(truckNumber);
-        
-        // Save the updated order
-        orderService.saveOrderManually(order); 
-        
         return "redirect:/production";
     }
 

@@ -53,8 +53,8 @@ public class PurchaseServiceImpl implements PurchaseService {
         double available = stockOpt.map(Stock::getQuantity).orElse(0.0);
 
         if (available < requiredQty) {
-            // Insufficient stock -> create purchase entry
-            log.warn("[Order {}] Insufficient stock for {}. Required: {}, Available: {}. Creating Purchase Entry.", orderId, materialName, requiredQty, available);
+            // Insufficient stock → create purchase entry
+            log.info("Order {} - Insufficient stock for {}. Required: {}, Available: {}. Creating Purchase Entry.", orderId, materialName, requiredQty, available);
             Purchase purchase = Purchase.builder()
                     .order(order)
                     .materialName(materialName)
@@ -70,8 +70,8 @@ public class PurchaseServiceImpl implements PurchaseService {
                             + " (required: " + requiredQty + ", available: " + available + ")",
                     username);
         } else {
-            // Sufficient stock -> deduct and move to production
-            log.info("[Order {}] Sufficient stock for {}. Deducting {} unit(s).", orderId, materialName, requiredQty);
+            // Sufficient stock → deduct and move to production
+            log.info("Order {} - Sufficient stock for {}. Deducting {} unit(s).", orderId, materialName, requiredQty);
             Stock stock = stockOpt.get();
             stock.setQuantity(stock.getQuantity() - requiredQty);
             stockRepository.save(stock);
