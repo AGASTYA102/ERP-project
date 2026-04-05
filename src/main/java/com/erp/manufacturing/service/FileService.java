@@ -21,6 +21,14 @@ public class FileService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    /**
+     * Stores an uploaded file securely.
+     * Generates a UUID prefix for uniqueness and validates the file extension.
+     * Prevents path traversal vulnerabilities.
+     * 
+     * @param file The multipart file to store
+     * @return The absolute path to the stored file
+     */
     public String storeFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Cannot upload an empty file");
