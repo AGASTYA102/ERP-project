@@ -24,64 +24,17 @@
             </table>
         </div>
 
-        <div class="card p-4 border-warning mt-4 shadow-sm">
-            <h5 class="mb-3 text-warning-emphasis">Work In Progress (In Production)</h5>
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Order</th>
-                            <th>Product</th>
-                            <th>Order Qty</th>
-                            <th>Operational Status</th>
-                            <th>Production Details</th>
-                            <th>Logistics</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="order : ${inProductionOrders}">
-                            <td>
-                                <strong>#<span th:text="${order.id}"></span></strong><br>
-                                <span class="small text-muted" th:text="${order.client.name}"></span>
-                            </td>
-                            <td th:text="${order.product.name}"></td>
-                            <td class="fw-bold" th:text="${order.quantity}"></td>
-                            <td>
-                                <form th:action="@{/production/update-status}" method="post" th:id="'form-' + ${order.id}">
-                                    <input type="hidden" name="orderId" th:value="${order.id}">
-                                    <div class="mb-2">
-                                        <label class="small fw-bold d-block">Print Status</label>
-                                        <select name="printStatus" class="form-select form-select-sm">
-                                            <option th:each="s : ${T(com.erp.manufacturing.enums.PrintStatus).values()}" th:value="${s}" th:text="${s}" th:selected="${s == order.printStatus}"></option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="small fw-bold d-block">Corru Status</label>
-                                        <select name="corruStatus" class="form-select form-select-sm">
-                                            <option th:each="s : ${T(com.erp.manufacturing.enums.CorruStatus).values()}" th:value="${s}" th:text="${s}" th:selected="${s == order.corruStatus}"></option>
-                                        </select>
-                                    </div>
-                            </td>
-                            <td>
-                                <div class="mb-2">
-                                    <label class="small fw-bold">Total Sheets Req.</label>
-                                    <input type="number" name="totalSheets" class="form-control form-control-sm" th:value="${order.totalSheetsRequired}" placeholder="Qty">
-                                </div>
-                            </td>
-                            <td>
-                                <label class="small fw-bold">Truck Number</label>
-                                <input type="text" name="truckNumber" class="form-control form-control-sm" th:value="${order.deliveryTruckNumber}" placeholder="e.g. MH-12-AB-1234">
-                            </td>
-                            <td>
-                                <button type="submit" class="btn btn-sm btn-primary w-100 mb-1">Update Info</button>
-                                </form>
-                                <a th:href="@{/production/complete/{id}(id=${order.id})}" class="btn btn-sm btn-outline-success w-100">Ready for Billing</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="card p-4 border-warning mt-4">
+            <h5 class="mb-3">Work In Progress (In Production)</h5>
+            <table class="table">
+                <thead><tr><th>Order ID</th><th>Product</th><th>Client</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr th:each="order : ${inProductionOrders}">
+                        <td th:text="${order.id}"></td><td th:text="${order.product.name}"></td><td th:text="${order.client.name}"></td>
+                        <td><a th:href="@{/production/complete/{id}(id=${order.id})}" class="btn btn-sm btn-warning text-dark">Log Completion</a></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

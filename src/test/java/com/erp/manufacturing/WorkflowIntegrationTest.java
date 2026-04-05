@@ -15,7 +15,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,19 +40,15 @@ public class WorkflowIntegrationTest {
     @BeforeEach
     public void setup() {
         Client client = new Client();
-        client.setName("Test Client");
         client = clientRepository.save(client);
         testClientId = client.getId();
 
-        Product product = productRepository.save(Product.builder()
-                .name("Concurrency Product")
-                .client(client) // Mandatory relationship
-                .build());
+        Product product = new Product();
+        product = productRepository.save(product);
         testProductId = product.getId();
 
         Stock stock = new Stock();
         stock.setMaterialName("Paper Roll");
-        stock.setType(com.erp.manufacturing.enums.MaterialType.REEL);
         stock.setQuantity(500.0);
         stockRepository.save(stock);
     }
@@ -63,7 +58,6 @@ public class WorkflowIntegrationTest {
     public void testFullWorkflow() throws Exception {
         // Step 1: Create Order
         String response = mockMvc.perform(post("/test/workflow/create-order")
-                .with(csrf())
                 .param("clientId", testClientId.toString())
                 .param("productId", testProductId.toString())
                 .param("quantity", "100"))
@@ -76,20 +70,17 @@ public class WorkflowIntegrationTest {
         
         // Step 2: Submit Design
         mockMvc.perform(post("/test/workflow/submit-design")
-                .with(csrf())
                 .param("orderId", orderIdStr))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("PURCHASE_PENDING"));
 
         // Negative Test: Try design again (should fail)
         mockMvc.perform(post("/test/workflow/submit-design")
-                .with(csrf())
                 .param("orderId", orderIdStr))
                 .andExpect(status().isBadRequest()); // Or 500 depending on exception handler
 
         // Step 3: Purchase (Stock available)
         mockMvc.perform(post("/test/workflow/process-purchase")
-                .with(csrf())
                 .param("orderId", orderIdStr)
                 .param("materialName", "Paper Roll")
                 .param("requiredQty", "100.0"))
@@ -98,7 +89,6 @@ public class WorkflowIntegrationTest {
 
         // Step 4: Production (Start then Complete)
         mockMvc.perform(post("/test/workflow/update-production")
-                .with(csrf())
                 .param("orderId", orderIdStr)
                 .param("isComplete", "false")
                 .param("quantityProduced", "0"))
@@ -106,7 +96,6 @@ public class WorkflowIntegrationTest {
                 .andExpect(jsonPath("$.status").value("IN_PRODUCTION"));
 
         mockMvc.perform(post("/test/workflow/update-production")
-                .with(csrf())
                 .param("orderId", orderIdStr)
                 .param("isComplete", "true")
                 .param("quantityProduced", "100"))
@@ -115,10 +104,9 @@ public class WorkflowIntegrationTest {
 
         // Step 5: Accounts finalize
         mockMvc.perform(post("/test/workflow/finalize-accounts")
-                .with(csrf())
                 .param("orderId", orderIdStr)
                 .param("rate", "15.5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("COMPLETED")); // Updated per new workflow (Generated Bill = COMPLETED)
+                .andExpect(jsonPath("$.status").value("CLOSED"));
     }
 }

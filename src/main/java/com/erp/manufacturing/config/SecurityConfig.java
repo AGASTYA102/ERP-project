@@ -3,31 +3,23 @@ package com.erp.manufacturing.config;
 import com.erp.manufacturing.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
-    private final Environment env;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService, Environment env) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.env = env;
     }
 
     @Bean
@@ -65,26 +57,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        boolean isDev = Arrays.asList(env.getActiveProfiles()).contains("dev");
-
         http
-            .sessionManagement(session -> session
-                .sessionFixation().migrateSession()
+            // .csrf().disable() // Enable CSRF in production, disabled for simplicity/h2-console
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/gm/**").hasRole("GENERAL_MANAGER")
+                .requestMatchers("/designer/**").hasRole("DESIGNER")
+                .requestMatchers("/purchase/**").hasRole("PURCHASE_MANAGER")
+                .requestMatchers("/production/**").hasRole("PRODUCTION_MANAGER")
+                .requestMatchers("/accounts/**").hasRole("ACCOUNTS")
+                .anyRequest().authenticated()
             )
-            .authorizeHttpRequests(authz -> {
-                authz.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
-                
-                if (isDev) {
-                    authz.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll();
-                }
-                
-                authz.requestMatchers("/gm/**").hasRole("GENERAL_MANAGER")
-                     .requestMatchers("/designer/**").hasRole("DESIGNER")
-                     .requestMatchers("/purchase/**").hasRole("PURCHASE_MANAGER")
-                     .requestMatchers("/production/**").hasRole("PRODUCTION_MANAGER")
-                     .requestMatchers("/accounts/**").hasRole("ACCOUNTS")
-                     .anyRequest().authenticated();
-            })
             .formLogin(form -> form
                 .loginPage("/login")
                 .successHandler(customAuthenticationSuccessHandler())
@@ -95,11 +78,6 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             );
-
-        if (isDev) {
-            http.csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
-        }
 
         return http.build();
     }

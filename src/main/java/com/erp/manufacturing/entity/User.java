@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
-@Table(name = "erp_users")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor

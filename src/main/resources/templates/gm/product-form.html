@@ -6,38 +6,11 @@
     <div th:replace="~{fragments/layout :: sidebar}"></div>
     <div class="main-content">
         <h2 class="mb-4">Add New Product</h2>
-        <div class="card p-4 mx-auto" style="max-width: 600px;">
-            <form th:action="@{/gm/products/save(source=${source})}" th:object="${product}" method="post" enctype="multipart/form-data">
+        <div class="card p-4 mx-auto" style="max-width: 500px;">
+            <form th:action="@{/gm/products/save}" th:object="${product}" method="post">
                 <div class="mb-3">
-                    <label class="form-label">Client</label>
-                    <select class="form-select" th:field="*{client.id}" required>
-                        <option value="" disabled selected>Select Client...</option>
-                        <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.name}"></option>
-                    </select>
-                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('client.id')}" th:errors="*{client.id}"></div>
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Product Name</label>
-                    <input type="text" class="form-control" th:field="*{name}" required>
+                    <label>Name</label><input type="text" class="form-control" th:field="*{name}" required>
                     <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Design Approved File (PDF)</label>
-                    <input type="file" name="designFile" class="form-control" accept=".pdf">
-                </div>
-
-                <div class="card bg-light p-3 mb-3">
-                    <h6 class="border-bottom pb-2">Corrugation Specs</h6>
-                    <div class="mb-3">
-                        <label class="form-label">Top Ply Material</label>
-                        <input type="text" class="form-control" th:field="*{topPlyMaterial}" placeholder="e.g. 180 GSM Kraft">
-                    </div>
-                    <div class="mb-0">
-                        <label class="form-label">Rest Ply Specs</label>
-                        <textarea class="form-control" th:field="*{restPlySpecs}" rows="2" placeholder="Describe other layers..."></textarea>
-                    </div>
                 </div>
                 <div class="mb-3 row">
                     <div class="col"><label>Rate/Unit</label><input type="number" step="0.01" class="form-control" th:field="*{ratePerUnit}">
@@ -55,9 +28,13 @@
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('sheetSize')}" th:errors="*{sheetSize}"></div>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label>Die No</label><input type="text" class="form-control" th:field="*{dieNo}">
-                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dieNo')}" th:errors="*{dieNo}"></div>
+                <div class="mb-3 row">
+                    <div class="col"><label>Die No</label><input type="text" class="form-control" th:field="*{dieNo}">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dieNo')}" th:errors="*{dieNo}"></div>
+                    </div>
+                    <div class="col"><label>Plate ID</label><input type="text" class="form-control" th:field="*{plateId}">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('plateId')}" th:errors="*{plateId}"></div>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label>Spec</label><textarea class="form-control" th:field="*{materialSpecs}"></textarea>

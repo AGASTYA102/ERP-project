@@ -46,13 +46,13 @@ public class ProductionServiceImpl implements ProductionService {
                 && production.getQuantityProduced() > 0;
 
         if (isComplete) {
-            log.info("[Order {}] Production completed. Total Produced: {} units.", orderId, production.getQuantityProduced());
+            log.info("Order {} - Production completed. Produced {} units.", orderId, production.getQuantityProduced());
             orderService.updateOrderStatus(orderId, OrderStatus.COMPLETED,
                     "Production completed. Qty produced: " + production.getQuantityProduced()
                             + ", Truck: " + production.getTruckNumber(),
                     username);
         } else {
-            log.info("[Order {}] Production in progress. (Printing: {}, Corrugation: {})", orderId, production.getPrintingDone(), production.getCorrugationDone());
+            log.info("Order {} - Production in progress. Printing Done: {}, Corrugation Done: {}", orderId, production.getPrintingDone(), production.getCorrugationDone());
             if (order.getStatus() == OrderStatus.READY_FOR_PRODUCTION) {
                 orderService.updateOrderStatus(orderId, OrderStatus.IN_PRODUCTION,
                         "Production started. Printing: " + production.getPrintingDone()

@@ -21,12 +21,6 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @jakarta.validation.constraints.NotNull(message = "Client is required")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "client_id", nullable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private Client client;
-
     private Double ratePerUnit;
 
     private String dimensions;
@@ -38,13 +32,6 @@ public class Product {
     private String dieNo;
 
     private String plateId;
-
-    private String designApprovedFileUrl;
-
-    private String topPlyMaterial;
-
-    @Column(columnDefinition = "TEXT")
-    private String restPlySpecs;
 
     @Column(columnDefinition = "TEXT")
     private String materialSpecs;

@@ -41,20 +41,10 @@ public class DesignServiceImpl implements DesignService {
         designRepository.save(design);
 
         // Transition: DESIGN_PENDING → DESIGN_COMPLETED → PURCHASE_PENDING
-        log.info("[Order {}] Design submitted successfully.", orderId);
+        log.info("Design submitted for order {}", orderId);
         orderService.updateOrderStatus(orderId, OrderStatus.DESIGN_COMPLETED,
                 "Design submitted successfully", username);
         orderService.updateOrderStatus(orderId, OrderStatus.PURCHASE_PENDING,
                 "Sent to Purchase Department for material check", username);
-    }
-
-    @Override
-    public java.util.List<String> getDistinctDieIds() {
-        return designRepository.findDistinctDieIds();
-    }
-
-    @Override
-    public java.util.List<String> getDistinctPalleteIds() {
-        return designRepository.findDistinctPalleteIds();
     }
 }

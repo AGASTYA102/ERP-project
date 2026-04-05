@@ -13,25 +13,25 @@
                 <div class="mb-3 d-flex justify-content-between align-items-end">
                     <div class="flex-grow-1 me-2">
                         <label class="form-label">Client</label>
-                        <select id="clientSelect" class="form-select" th:field="*{client.id}" required>
+                        <select class="form-select" th:field="*{client.id}" required>
                             <option value="" disabled selected>Select Client...</option>
                             <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.name}"></option>
                         </select>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('client.id')}" th:errors="*{client.id}"></div>
                     </div>
-                    <a th:href="@{/gm/clients/new(source='order-form')}" class="btn btn-outline-primary">+ New</a>
+                    <a href="/gm/clients/new" class="btn btn-outline-primary">+ New</a>
                 </div>
 
                 <div class="mb-3 d-flex justify-content-between align-items-end">
                     <div class="flex-grow-1 me-2">
                         <label class="form-label">Product</label>
-                        <select id="productSelect" class="form-select" th:field="*{product.id}" required>
-                            <option value="" disabled selected>Select Product (Select Client First)...</option>
+                        <select class="form-select" th:field="*{product.id}" required>
+                            <option value="" disabled selected>Select Product...</option>
                             <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}"></option>
                         </select>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('product.id')}" th:errors="*{product.id}"></div>
                     </div>
-                    <a th:href="@{/gm/products/new(source='order-form')}" class="btn btn-outline-primary">+ New</a>
+                    <a href="/gm/products/new" class="btn btn-outline-primary">+ New</a>
                 </div>
 
                 <div class="mb-3">
@@ -58,31 +58,5 @@
     </div>
 </div>
 <script th:replace="~{fragments/layout :: scripts}"></script>
-<script>
-    document.getElementById('clientSelect').addEventListener('change', function() {
-        const clientId = this.value;
-        const productSelect = document.getElementById('productSelect');
-        
-        // Clear current options
-        productSelect.innerHTML = '<option value="" disabled selected>Loading products...</option>';
-        
-        // Fetch products for selected client
-        fetch(`/gm/api/products/filter?clientId=${clientId}`)
-            .then(response => response.json())
-            .then(products => {
-                productSelect.innerHTML = '<option value="" disabled selected>Select Product...</option>';
-                products.forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.id;
-                    option.textContent = p.name;
-                    productSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching products:', error);
-                productSelect.innerHTML = '<option value="" disabled selected>Error loading products</option>';
-            });
-    });
-</script>
 </body>
 </html>

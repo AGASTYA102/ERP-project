@@ -1,13 +1,11 @@
 package com.erp.manufacturing.controller;
 
 import com.erp.manufacturing.entity.Design;
-import com.erp.manufacturing.entity.OrderEntity;
 import com.erp.manufacturing.enums.OrderStatus;
 import com.erp.manufacturing.service.DesignService;
 import com.erp.manufacturing.service.FileService;
 import com.erp.manufacturing.service.OrderService;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/designer")
-@PreAuthorize("hasRole('DESIGNER')")
 public class DesignerController {
 
     private final OrderService orderService;
@@ -36,11 +33,8 @@ public class DesignerController {
 
     @GetMapping("/upload/{orderId}")
     public String showUploadForm(@PathVariable Long orderId, Model model) {
-        OrderEntity order = orderService.getOrderById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + orderId));
-        model.addAttribute("order", order);
+        model.addAttribute("orderId", orderId);
         model.addAttribute("design", new Design());
-        model.addAttribute("existingPalletes", designService.getDistinctPalleteIds());
         return "designer/upload-form";
     }
 

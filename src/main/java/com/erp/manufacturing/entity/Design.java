@@ -36,10 +36,4 @@ public class Design {
     private String dieId;
 
     private String dieMaker;
-
-    private String palleteType;
-
-    private String palleteId;
-
-    private String palleteMaker;
 }

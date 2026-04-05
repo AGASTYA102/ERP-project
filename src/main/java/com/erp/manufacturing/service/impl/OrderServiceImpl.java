@@ -9,8 +9,6 @@ import com.erp.manufacturing.repository.OrderRepository;
 import com.erp.manufacturing.repository.ProductRepository;
 import com.erp.manufacturing.service.OrderLogService;
 import com.erp.manufacturing.service.OrderService;
-import com.erp.manufacturing.service.JobCardService;
-import com.erp.manufacturing.entity.JobCard;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,18 +26,15 @@ public class OrderServiceImpl implements OrderService {
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
     private final OrderLogService orderLogService;
-    private final JobCardService jobCardService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             ClientRepository clientRepository,
                             ProductRepository productRepository,
-                            OrderLogService orderLogService,
-                            JobCardService jobCardService) {
+                            OrderLogService orderLogService) {
         this.orderRepository = orderRepository;
         this.clientRepository = clientRepository;
         this.productRepository = productRepository;
         this.orderLogService = orderLogService;
-        this.jobCardService = jobCardService;
     }
 
     @Override
@@ -69,34 +64,15 @@ public class OrderServiceImpl implements OrderService {
 
         // Log creation
         orderLogService.logAction(savedOrder, "Order created with status CREATED", username);
-        log.info("[Order {}] Created with status {}", savedOrder.getId(), OrderStatus.CREATED);
+        log.info("Order {} created with status {}", savedOrder.getId(), OrderStatus.CREATED);
 
         // Transition to DESIGN_PENDING
         savedOrder.setStatus(OrderStatus.DESIGN_PENDING);
         orderRepository.save(savedOrder);
         orderLogService.logAction(savedOrder, "Status changed to DESIGN_PENDING — sent to Design team", username);
-        log.info("[Order {}] Initial transition: {} -> {}", savedOrder.getId(), OrderStatus.CREATED, OrderStatus.DESIGN_PENDING);
+        log.info("Order {} moved from {} to {}", savedOrder.getId(), OrderStatus.CREATED, OrderStatus.DESIGN_PENDING);
 
         return savedOrder;
-    }
-
-    @Override
-    @Transactional
-    public void punchOrder(OrderEntity order, String username) {
-        // Create the order
-        OrderEntity savedOrder = createOrder(order, username);
-        
-        // Auto-create JobCard (Within the same transaction)
-        Product product = savedOrder.getProduct();
-        JobCard jobCard = JobCard.builder()
-                .order(savedOrder)
-                .dieNo(product.getDieNo())
-                .plateId(product.getPlateId())
-                .sheetSize(product.getSheetSize())
-                .build();
-        
-        jobCardService.createJobCard(jobCard);
-        log.info("[Order {}] JobCard created successfully under atomic transaction", savedOrder.getId());
     }
 
     @Override
@@ -120,36 +96,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void updateOrderStatus(Long orderId, OrderStatus newStatus, String action, String username) {
-        OrderEntity order = getOrderById(orderId)
+        OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with ID: " + orderId));
-        
         OrderStatus oldStatus = order.getStatus();
-        
-        // Enforce Workflow rules
-        com.erp.manufacturing.util.WorkflowValidator.validateTransition(oldStatus, getExpectedPreviousStatuses(newStatus));
-        
         order.setStatus(newStatus);
         orderRepository.save(order);
         orderLogService.logAction(order, action + " — Status updated to " + newStatus.name(), username);
-        log.info("[Order {}] Status transition: {} -> {} (By: {})", orderId, oldStatus, newStatus, username);
-    }
- 
-    @Override
-    @Transactional
-    public void saveOrderManually(OrderEntity order) {
-        orderRepository.save(order);
-    }
-
-    private OrderStatus[] getExpectedPreviousStatuses(OrderStatus newStatus) {
-        switch (newStatus) {
-            case DESIGN_PENDING: return new OrderStatus[]{OrderStatus.CREATED};
-            case DESIGN_COMPLETED: return new OrderStatus[]{OrderStatus.DESIGN_PENDING};
-            case PURCHASE_PENDING: return new OrderStatus[]{OrderStatus.DESIGN_COMPLETED, OrderStatus.DESIGN_PENDING}; // Allow from both for flexibility
-            case READY_FOR_PRODUCTION: return new OrderStatus[]{OrderStatus.PURCHASE_PENDING};
-            case IN_PRODUCTION: return new OrderStatus[]{OrderStatus.READY_FOR_PRODUCTION, OrderStatus.IN_PRODUCTION};
-            case COMPLETED: return new OrderStatus[]{OrderStatus.IN_PRODUCTION, OrderStatus.READY_FOR_PRODUCTION, OrderStatus.COMPLETED};
-            case CLOSED: return new OrderStatus[]{OrderStatus.COMPLETED};
-            default: return new OrderStatus[]{};
-        }
+        log.info("Order {} moved from {} to {}", orderId, oldStatus, newStatus);
     }
 }
