@@ -46,7 +46,11 @@ public class FileService {
 
             String fileName = UUID.randomUUID().toString() + "_" + originalFileName;
 
-            Path targetLocation = uploadPath.resolve(fileName);
+            Path targetLocation = uploadPath.resolve(fileName).normalize().toAbsolutePath();
+            Path normalizedUploadPath = uploadPath.normalize().toAbsolutePath();
+            if (!targetLocation.startsWith(normalizedUploadPath)) {
+                throw new SecurityException("Cannot store file outside target directory.");
+            }
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return targetLocation.toString();
